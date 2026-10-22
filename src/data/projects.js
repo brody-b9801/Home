@@ -5,7 +5,7 @@ import capsuleClashImg from '../images/capsule-clash.webp'
 import ivrImg from '../images/vex_thumbnail.webp'
 import knossosImg from '../images/knossosCapitalist.webp'
 
-const placeholder = '/thumbnails/placeholder.svg'
+const placeholder = `${import.meta.env.BASE_URL}thumbnails/placeholder.svg`
 
 export const site = {
   name: "Brody Blask's Portfolio",
