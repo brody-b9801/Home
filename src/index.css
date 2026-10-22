@@ -1,0 +1,234 @@
+html {
+    background-color: rgb(255, 140, 40);
+}
+
+:root {
+    --card-width: 360px;
+    --card-gap: 20px;
+    --column-padding: 80px;
+    --column-width: calc(2 * var(--card-width) + var(--card-gap) + var(--column-padding));
+}
+
+@media (min-width: 1200px) {
+    :root {
+        --column-width: calc(3 * var(--card-width) + 2 * var(--card-gap) + var(--column-padding));
+    }
+}
+
+body {
+    max-width: var(--column-width);
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 8px 20px;
+    box-sizing: border-box;
+    text-align: center;
+    font-family: "VT323", monospace;
+    font-size: 20px;
+    background-color: rgb(255, 214, 170);
+    color: white;
+    text-shadow:
+        -1px 0 0 black,
+         1px 0 0 black,
+         0 -1px 0 black,
+         0  1px 0 black;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.header h1 {
+    margin-bottom: 0;
+    font-weight: normal;
+    -webkit-text-stroke: 1.5px white;
+    text-shadow:
+        -2px 0 0 black,
+         2px 0 0 black,
+         0 -2px 0 black,
+         0  2px 0 black,
+        -2px -2px 0 black,
+         2px -2px 0 black,
+        -2px  2px 0 black,
+         2px  2px 0 black;
+}
+
+.intro {
+    margin-top: 20px;
+}
+
+.sectionTitle {
+    margin: 20px 0 0;
+    font-size: 2em;
+    font-weight: normal;
+}
+
+.comingSoon {
+    margin: 10px 0 0;
+}
+
+.thumbnailContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--card-gap);
+    margin: 10px auto 0;
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+.thumbnail {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 var(--card-width);
+    box-sizing: border-box;
+    padding: 12px;
+    border: 2px white solid;
+    border-radius: 12px;
+    background-color: rgb(255, 165, 80);
+    font: inherit;
+    color: inherit;
+    text-shadow: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.thumbnail:hover,
+.thumbnail:focus-visible {
+    background-color: rgb(235, 120, 25);
+}
+
+.thumbnailImage {
+    width: calc(100% - 4px);
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    border: 2px white solid;
+    border-radius: 6px;
+    box-sizing: content-box;
+}
+
+.thumbnailTitle {
+    margin: 10px 0 0;
+    font-size: 1.4em;
+}
+
+.thumbnailDesc {
+    margin: 4px 0 0;
+    text-align: center;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5em;
+  height: 2.5em;
+  box-sizing: border-box;
+  vertical-align: middle;
+  padding: 0;
+  background-color: rgb(255, 140, 40);
+  color: white;
+  text-decoration: none;
+  text-shadow: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.githubIcon {
+  display: block;
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.link:hover {
+  background-color: rgb(184, 88, 16);
+}
+
+.pagebreak {
+    width: 100px;
+    margin-top: 30px;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.popup {
+    position: relative;
+    width: 92vw;
+    height: 92vh;
+    height: 92dvh;
+}
+
+.popupButton {
+    position: absolute;
+    top: -9px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    box-sizing: border-box;
+    padding: 0;
+    border: 2px solid;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    line-height: 1;
+    text-shadow: none;
+    cursor: pointer;
+}
+
+.closeButton {
+    right: -9px;
+    background-color: #ff7878;
+    border-color: #ff3636;
+}
+
+.closeButton:hover {
+    background-color: #ff5c5c;
+}
+
+.externalButton {
+    right: 25px;
+    background-color: rgb(255, 140, 40);
+    border-color: rgb(184, 88, 16);
+}
+
+.externalButton:hover {
+    background-color: rgb(235, 120, 25);
+}
+
+.externalButton svg {
+    width: 14px;
+    height: 14px;
+}
+
+.popupFrame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: 2px white solid;
+    border-radius: 6px;
+    background-color: white;
+}
