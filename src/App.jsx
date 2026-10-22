@@ -87,6 +87,11 @@ export default function App() {
             <button className="popupButton closeButton" aria-label="Close" onClick={() => setOpen(null)} autoFocus>
               ✕
             </button>
+            {open.embedUrl.includes('itch.io') && window.matchMedia('(pointer: coarse)').matches && (
+              <p className="mobileWarning" role="status">
+                Heads up: this game doesn't work properly on mobile. Try it on a computer!
+              </p>
+            )}
             <iframe
               className="popupFrame"
               src={open.embedUrl}

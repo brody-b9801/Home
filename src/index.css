@@ -226,6 +226,30 @@ body {
     height: 14px;
 }
 
+.mobileWarning {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    width: max-content;
+    max-width: 80%;
+    margin: 0;
+    padding: 12px 16px;
+    border: 2px white solid;
+    border-radius: 12px;
+    background-color: rgb(255, 165, 80);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: fadeOut 2.5s ease-in 3s forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
 .popupFrame {
     display: block;
     width: 100%;
