@@ -102,6 +102,9 @@ body {
 }
 
 .thumbnailImage {
+    display: block;
+    flex: none;
+    min-height: 0;
     width: calc(100% - 4px);
     height: auto;
     aspect-ratio: 16 / 9;
