@@ -1,5 +1,7 @@
 html {
-    background-color: rgb(250, 190, 130);
+    /* Shows past the page edges (e.g. overscroll above the navbar), so match
+       the navbar and footer. */
+    background-color: var(--bar-color);
     /* 100vw includes the scrollbar, so clip the navbar's sliver of overflow. */
     overflow-x: clip;
     scroll-behavior: smooth;
@@ -30,19 +32,6 @@ html {
         --text-width: 40em;
         --column-width: calc(3 * var(--card-width) + 2 * var(--card-gap) + var(--column-padding));
     }
-}
-
-/* Grid pattern on the sides of the page. */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.35) 2px, transparent 2px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.35) 2px, transparent 2px);
-    background-size: 32px 32px;
-    pointer-events: none;
 }
 
 body {
@@ -90,6 +79,22 @@ body {
     border-bottom: 3px solid white;
     background-color: var(--bar-color);
     box-shadow: 0 4px 0 var(--bar-shadow);
+}
+
+/* Hidden while scrolling down (toggled in App.jsx); the extra 8px also
+   hides the shadow. Keyboard focus inside brings it back. */
+.navbar {
+    transition: transform 0.25s ease;
+}
+
+.navbar.navHidden:not(:focus-within) {
+    transform: translateY(calc(-100% - 8px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navbar {
+        transition: none;
+    }
 }
 
 @media (min-width: 1000px) {

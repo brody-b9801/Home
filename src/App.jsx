@@ -66,6 +66,28 @@ export default function App() {
     return () => observer.disconnect()
   }, [])
 
+  // Slide the navbar away when scrolling down past it, and back on scroll up.
+  useEffect(() => {
+    const navbar = document.querySelector('.navbar')
+    let lastY = window.scrollY
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const y = window.scrollY
+      if (Math.abs(y - lastY) < 6) return
+      navbar.classList.toggle('navHidden', y > lastY && y > navbar.offsetHeight * 2)
+      lastY = y
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
+
   return (
     <>
       <nav className={`navbar navbar-${NAV_LAYOUT}`}>
