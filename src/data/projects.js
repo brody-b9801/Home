@@ -12,11 +12,15 @@ export const site = {
   intro: "Hi, I'm a sophomore studying Computer Science at the University of Illinois Urbana-Champaign. I'm interested in game development and design, robotics, and software engineering. Check out some of the projects I've made!",
   github: 'https://github.com/brody-b9801',
   linkedin: 'https://www.linkedin.com/in/brody-blask/',
+  email: 'brodymb2@illinois.edu',
+  // Import an image (like the thumbnails above) and set it here to show a profile photo.
+  photo: null,
 }
 
 export const sections = [
   {
     title: 'Game Dev',
+    description: "Games I've designed and built, from game jams to a multiplayer FPS.",
     projects: [
       {
         title: 'Capsule Clash',
@@ -47,6 +51,7 @@ export const sections = [
   },
   {
     title: 'Robotics',
+    description: 'Software for competitive robots with Illini VEX Robotics.',
     projects: [
       {
         title: 'IVR Localization',
@@ -60,6 +65,7 @@ export const sections = [
   },
   {
     title: 'Fullstack Projects',
+    description: 'Bots, tools, and patches that run on the web.',
     projects: [
       {
         title: 'Countdown Bot',
@@ -81,10 +87,12 @@ export const sections = [
   },
   {
     title: 'Analog Games',
+    description: 'Board and card games, no screen required.',
     projects: [],
   },
   {
     title: 'Links',
+    description: 'Other places to find me and my work.',
     projects: [],
   },
 ]

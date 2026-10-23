@@ -1,25 +1,54 @@
 html {
-    background-color: rgb(255, 140, 40);
+    background-color: rgb(250, 190, 130);
+    /* 100vw includes the scrollbar, so clip the navbar's sliver of overflow. */
+    overflow-x: clip;
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
 }
 
 :root {
     --card-width: 360px;
     --card-gap: 20px;
+    --text-width: 30em;
+    /* Navbar and footer color, plus a darker shade for the navbar's shadow. */
+    --bar-color: rgb(255, 165, 80);
+    --bar-shadow: rgb(184, 88, 16);
     --column-padding: 80px;
     --column-width: calc(2 * var(--card-width) + var(--card-gap) + var(--column-padding));
 }
 
 @media (min-width: 1200px) {
     :root {
+        /* Grow cards and text on wide screens so the full-width bands don't
+           leave big empty margins. */
+        --card-width: clamp(360px, 26vw, 560px);
+        --text-width: 40em;
         --column-width: calc(3 * var(--card-width) + 2 * var(--card-gap) + var(--column-padding));
     }
 }
 
+/* Grid pattern on the sides of the page. */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.35) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.35) 2px, transparent 2px);
+    background-size: 32px 32px;
+    pointer-events: none;
+}
+
 body {
-    max-width: var(--column-width);
     min-height: 100vh;
     margin: 0 auto;
-    padding: 8px 20px;
+    padding: 0 20px 8px;
     box-sizing: border-box;
     text-align: center;
     font-family: "VT323", monospace;
@@ -33,17 +62,99 @@ body {
          0  1px 0 black;
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
+/* Scale all text (and the em-sized photo and buttons) up on wide screens. */
+@media (min-width: 1200px) {
+    body {
+        font-size: clamp(20px, 1.45vw, 26px);
+    }
 }
 
-.header h1 {
-    margin-bottom: 0;
+/* Navbar: title and links on one row on wide screens; on narrower screens
+   the links get their own row, wrapping onto more lines as needed. */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+        "title"
+        "links";
+    align-items: center;
+    gap: 6px 12px;
+    /* Break out of the centered body column to span the whole viewport. */
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    padding: 8px 24px;
+    box-sizing: border-box;
+    border-bottom: 3px solid white;
+    background-color: var(--bar-color);
+    box-shadow: 0 4px 0 var(--bar-shadow);
+}
+
+/* Hidden while scrolling down (toggled in App.jsx); the extra 8px also
+   hides the shadow. Keyboard focus inside brings it back. */
+.navbar {
+    transition: transform 0.25s ease;
+}
+
+.navbar.navHidden:not(:focus-within) {
+    transform: translateY(calc(-100% - 8px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navbar {
+        transition: none;
+    }
+}
+
+@media (min-width: 1000px) {
+    .navbar {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas: "title links";
+        gap: 24px;
+    }
+}
+
+/* Alignment variants, picked with NAV_LAYOUT in App.jsx. */
+.navbar-column {
+    /* Inset to the content column's inner edge (its padding). */
+    padding-inline: max(24px, calc(50vw - var(--column-width) / 2 + 20px));
+}
+
+@media (min-width: 1000px) {
+    .navbar-centered {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "title"
+            "links";
+        gap: 4px;
+    }
+}
+
+.navbar-centered .navLinks {
+    justify-content: center;
+}
+
+.navbar-centered .navTitle {
+    justify-self: center;
+}
+
+.navTitle {
+    grid-area: title;
+    justify-self: start;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+}
+
+.navTitle h1 {
+    margin: 0;
+    font-size: 1.8em;
     font-weight: normal;
-    -webkit-text-stroke: 1.5px white;
+    line-height: 1;
+    text-align: left;
+    -webkit-text-stroke: 1px white;
     text-shadow:
         -2px 0 0 black,
          2px 0 0 black,
@@ -55,8 +166,207 @@ body {
          2px  2px 0 black;
 }
 
+@media (max-width: 500px) {
+    .navTitle h1 {
+        font-size: 1.4em;
+    }
+
+    /* Shrink the links by the same ratio as the title (1.4 / 1.8). The extra
+       .navbar keeps this ahead of the base .navLinks a rule further down. */
+    .navbar .navLinks a {
+        font-size: 0.9em;
+    }
+}
+
+.navLinks {
+    grid-area: links;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0 6px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Short white divider (outlined like the text) between neighboring links. */
+.navLinks li {
+    display: flex;
+    align-items: center;
+}
+
+.navLinks li + li::before {
+    content: "";
+    flex: none;
+    width: 2px;
+    height: 1em;
+    margin-right: 6px;
+    background-color: white;
+    box-shadow: 0 0 0 1px black;
+}
+
+/* Set in App.jsx on a link that wraps to a new line. The divider keeps its
+   space (visibility, not display) so hiding it can't change the wrapping. */
+.navLinks li.lineStart::before {
+    visibility: hidden;
+}
+
+.navLinks a {
+    position: relative;
+    display: block;
+    padding: 4px 10px 6px;
+    color: inherit;
+    font-size: 1.15em;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+/* Dashed underline (see NavLink in App.jsx): on hover the center dash shows
+   first, then one more on each side per step until the row is full. On
+   leave it retracts from the ends back to the center. */
+.navDashes {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 2px;
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+}
+
+.navDashes span {
+    flex: none;
+    width: 6px;
+    height: 3px;
+    background-color: white;
+    box-shadow: 0 0 0 1px black;
+    opacity: 0;
+    transition: opacity 0.05s;
+    transition-delay: calc((var(--max) - var(--d)) * 25ms);
+}
+
+.navLinks a:hover .navDashes span,
+.navLinks a:focus-visible .navDashes span {
+    opacity: 1;
+    transition-delay: calc(var(--d) * 40ms);
+}
+
+.navLinks a:focus-visible {
+    outline: 2px dashed white;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navDashes span {
+        transition: none;
+    }
+}
+
+/* --nav-height is measured in App.jsx so nav links land below the navbar. */
+section {
+    scroll-margin-top: var(--nav-height, 80px);
+    /* Span the full content column so the alternating shades reach the
+       white side lines. Padding is uneven to offset the title's 20px top
+       margin and the thumbnails' 10px bottom padding: 30px above the
+       content and 50px below it (matching the gap below the intro). */
+    margin-inline: -20px;
+    padding: 10px 20px 40px;
+}
+
+section:nth-of-type(odd) {
+    --band-color: #fab478;
+    position: relative;
+    background-color: var(--band-color);
+}
+
+/* Pixel dither on the top and bottom edges of the colored bands: rows of
+   4px squares thin out (full, 75%, 50%, 25%) as they reach into the
+   neighboring band's padding. The band color shows through an SVG mask so
+   it follows --band-color. */
+section:nth-of-type(odd)::before,
+section:nth-of-type(odd)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background-color: var(--band-color);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 6' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h2v1H0zM1 1h1v1H1zM0 2h1v1H0zM1 3h1v1H1zM0 4h1v1H0z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 6' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h2v1H0zM1 1h1v1H1zM0 2h1v1H0zM1 3h1v1H1zM0 4h1v1H0z'/%3E%3C/svg%3E");
+    -webkit-mask-size: 8px 24px;
+    mask-size: 8px 24px;
+    -webkit-mask-repeat: repeat-x;
+    mask-repeat: repeat-x;
+    pointer-events: none;
+}
+
+section:nth-of-type(odd)::before {
+    top: -24px;
+    transform: scaleY(-1);
+}
+
+section:nth-of-type(odd)::after {
+    bottom: -24px;
+}
+
+/* Full-width footer matching the navbar. Positioned so it sits above the
+   last band's dither, and pulled down over the body's bottom padding. */
+.footer {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 24px;
+    width: 100vw;
+    margin: 0 calc(50% - 50vw) -8px;
+    padding: 16px 24px;
+    box-sizing: border-box;
+    border-top: 3px solid white;
+    background-color: var(--bar-color);
+}
+
+.footer p {
+    margin: 0;
+}
+
+.footer a {
+    color: inherit;
+    text-decoration-style: dashed;
+    text-underline-offset: 4px;
+}
+
+.profilePhoto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 8em;
+    height: 8em;
+    margin: 30px auto 0;
+    overflow: hidden;
+    border: 3px solid white;
+    border-radius: 50%;
+    background-color: rgb(255, 165, 80);
+    box-shadow: 0 6px 0 rgb(184, 88, 16);
+}
+
+.profilePhoto img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 24px;
+}
+
 .intro {
-    margin-top: 20px;
+    max-width: var(--text-width);
+    margin: 20px auto 50px;
 }
 
 .sectionTitle {
@@ -65,15 +375,22 @@ body {
     font-weight: normal;
 }
 
+/* 20px bottom margin + the thumbnails' 10px top padding = 30px gap. */
+.sectionDesc {
+    max-width: var(--text-width);
+    margin: 6px auto 20px;
+}
+
+/* 10px bottom margin + the section's 40px bottom padding = 50px gap. */
 .comingSoon {
-    margin: 10px 0 0;
+    margin: 10px 0;
 }
 
 .thumbnailContainer {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: var(--card-gap);
+    gap: calc(var(--card-gap) + 10px) var(--card-gap);
     margin: 10px auto 0;
     padding: 10px 20px;
     box-sizing: border-box;
@@ -84,21 +401,43 @@ body {
     flex-direction: column;
     flex: 0 1 var(--card-width);
     box-sizing: border-box;
-    padding: 12px;
-    border: 2px white solid;
-    border-radius: 12px;
+    padding: 10px 10px 14px;
+    border: 3px white solid;
+    border-radius: 8px;
     background-color: rgb(255, 165, 80);
+    box-shadow: 0 6px 0 rgb(184, 88, 16);
     font: inherit;
     color: inherit;
     text-shadow: inherit;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .thumbnail:hover,
 .thumbnail:focus-visible {
-    background-color: rgb(235, 120, 25);
+    background-color: rgb(245, 135, 40);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 0 rgb(184, 88, 16);
+}
+
+.thumbnail:focus-visible {
+    outline: 3px dashed white;
+    outline-offset: 4px;
+}
+
+.thumbnail:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 rgb(184, 88, 16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .thumbnail,
+    .thumbnail:hover,
+    .thumbnail:focus-visible,
+    .thumbnail:active {
+        transform: none;
+    }
 }
 
 .thumbnailImage {
@@ -110,18 +449,28 @@ body {
     aspect-ratio: 16 / 9;
     object-fit: cover;
     border: 2px white solid;
-    border-radius: 6px;
+    border-radius: 4px;
     box-sizing: content-box;
+    transition: filter 0.2s ease;
+}
+
+.thumbnail:hover .thumbnailImage,
+.thumbnail:focus-visible .thumbnailImage {
+    filter: brightness(1.08) saturate(1.1);
 }
 
 .thumbnailTitle {
     margin: 10px 0 0;
-    font-size: 1.4em;
+    padding-bottom: 6px;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.7);
+    font-size: 1.5em;
+    line-height: 1;
 }
 
 .thumbnailDesc {
-    margin: 4px 0 0;
+    margin: 8px 0 0;
     text-align: center;
+    line-height: 1.1;
 }
 
 .link {
@@ -133,13 +482,15 @@ body {
   box-sizing: border-box;
   vertical-align: middle;
   padding: 0;
-  background-color: rgb(255, 140, 40);
+  border: 3px solid white;
+  border-radius: 8px;
+  background-color: rgb(255, 165, 80);
+  box-shadow: 0 4px 0 rgb(184, 88, 16);
   color: white;
   text-decoration: none;
   text-shadow: none;
-  border-radius: 5px;
   font-weight: bold;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .githubIcon {
@@ -148,20 +499,62 @@ body {
   height: 1.2em;
 }
 
-.link:hover {
-  background-color: rgb(184, 88, 16);
+.link:hover,
+.link:focus-visible {
+  background-color: rgb(245, 135, 40);
+  box-shadow: 0 6px 0 rgb(184, 88, 16);
+  transform: translateY(-2px);
 }
 
-.pagebreak {
-    width: 100px;
-    margin-top: 30px;
+.link:focus-visible {
+  outline: 3px dashed white;
+  outline-offset: 3px;
 }
 
-.buttonContainer {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 30px;
+.link:active {
+  box-shadow: 0 1px 0 rgb(184, 88, 16);
+  transform: translateY(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link,
+  .link:hover,
+  .link:focus-visible,
+  .link:active {
+    transform: none;
+  }
+}
+
+/* Reveal on scroll: App.jsx adds .reveal to the top hero and each section, then .visible once
+   it scrolls into view. Only the "from" state is animated (fill: backwards)
+   so the cards' own hover transforms still work afterwards. */
+.reveal:not(.visible) :is(.profilePhoto, .buttonContainer, .intro, .sectionTitle, .sectionDesc, .comingSoon, .thumbnail) {
+    opacity: 0;
+}
+
+.reveal.visible :is(.profilePhoto, .buttonContainer, .intro, .sectionTitle, .sectionDesc, .comingSoon, .thumbnail) {
+    animation: rise 0.6s ease-out backwards;
+    /* --reveal-offset delays sections already on screen at load. */
+    animation-delay: var(--reveal-offset, 0s);
+}
+
+.reveal.visible .sectionDesc {
+    animation-delay: calc(var(--reveal-offset, 0s) + 0.08s);
+}
+
+.reveal.visible .buttonContainer { animation-delay: 0.1s; }
+.reveal.visible .intro { animation-delay: 0.2s; }
+
+.reveal.visible .thumbnail:nth-child(1) { animation-delay: calc(var(--reveal-offset, 0s) + 0.15s); }
+.reveal.visible .thumbnail:nth-child(2) { animation-delay: calc(var(--reveal-offset, 0s) + 0.25s); }
+.reveal.visible .thumbnail:nth-child(3) { animation-delay: calc(var(--reveal-offset, 0s) + 0.35s); }
+.reveal.visible .thumbnail:nth-child(n + 4) { animation-delay: calc(var(--reveal-offset, 0s) + 0.45s); }
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
 }
 
 .overlay {
@@ -183,47 +576,83 @@ body {
 
 .popupButton {
     position: absolute;
-    top: -9px;
+    top: -12px;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 34px;
+    height: 34px;
     box-sizing: border-box;
     padding: 0;
-    border: 2px solid;
-    border-radius: 5px;
+    border: 3px solid white;
+    border-radius: 8px;
     color: white;
     font-size: 16px;
     line-height: 1;
     text-shadow: none;
     cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.popupButton:hover,
+.popupButton:focus-visible {
+    transform: translateY(-2px);
+}
+
+.popupButton:focus-visible {
+    outline: 3px dashed white;
+    outline-offset: 3px;
+}
+
+.popupButton:active {
+    transform: translateY(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .popupButton,
+    .popupButton:hover,
+    .popupButton:focus-visible,
+    .popupButton:active {
+        transform: none;
+    }
 }
 
 .closeButton {
-    right: -9px;
+    right: -12px;
     background-color: #ff7878;
-    border-color: #ff3636;
+    box-shadow: 0 4px 0 #c42a2a;
 }
 
-.closeButton:hover {
+.closeButton:hover,
+.closeButton:focus-visible {
     background-color: #ff5c5c;
+    box-shadow: 0 6px 0 #c42a2a;
+}
+
+.closeButton:active {
+    box-shadow: 0 1px 0 #c42a2a;
 }
 
 .externalButton {
-    right: 25px;
-    background-color: rgb(255, 140, 40);
-    border-color: rgb(184, 88, 16);
+    right: 30px;
+    background-color: rgb(255, 165, 80);
+    box-shadow: 0 4px 0 rgb(184, 88, 16);
 }
 
-.externalButton:hover {
-    background-color: rgb(235, 120, 25);
+.externalButton:hover,
+.externalButton:focus-visible {
+    background-color: rgb(245, 135, 40);
+    box-shadow: 0 6px 0 rgb(184, 88, 16);
+}
+
+.externalButton:active {
+    box-shadow: 0 1px 0 rgb(184, 88, 16);
 }
 
 .externalButton svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
 }
 
 .mobileWarning {
